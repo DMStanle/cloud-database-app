@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cloud Database Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+    }
+    button {
+      cursor: pointer;
+    }
+    .item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cloud Database Demo</h1>
+  <p>Add a person and a task, then save it to Firestore.</p>
+
+  <input type="text" id="nameInput" placeholder="Enter name" />
+  <input type="text" id="taskInput" placeholder="Enter task" />
+  <button id="saveBtn">Save to Cloud</button>
+
+  <h2>Saved Entries</h2>
+  <div id="output"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDyYKP5wvOcZu2c8u1U2S1jpLFNhi8Amqc",
+      authDomain: "cloud-database-project-aa0a7.firebaseapp.com",
+      projectId: "cloud-database-project-aa0a7",
+      storageBucket: "cloud-database-project-aa0a7.firebasestorage.app",
+      messagingSenderId: "956765029246",
+      appId: "1:956765029246:web:ac5362ed1fec0f3938292f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const nameInput = document.getElementById("nameInput");
+    const taskInput = document.getElementById("taskInput");
+    const saveBtn = document.getElementById("saveBtn");
+    const output = document.getElementById("output");
+
+    async function saveEntry() {
+      const name = nameInput.value.trim();
+      const task = taskInput.value.trim();
+
+      if (!name || !task) {
+        alert("Please enter both a name and a task.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "tasks"), {
+          name: name,
+          task: task
+        });
+
+        nameInput.value = "";
+        taskInput.value = "";
+        loadEntries();
+      } catch (error) {
+        alert("Error saving data: " + error.message);
+      }
+    }
+
+    async function loadEntries() {
+      output.innerHTML = "";
+      try {
+        const querySnapshot = await getDocs(collection(db, "tasks"));
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const div = document.createElement("div");
+          div.className = "item";
+          div.innerHTML = `<strong>${data.name}</strong><br>${data.task}`;
+          output.appendChild(div);
+        });
+      } catch (error) {
+        output.innerHTML = "Error loading data.";
+      }
+    }
+
+    saveBtn.addEventListener("click", saveEntry);
+    loadEntries();
+  </script>
+</body>
+</html>
