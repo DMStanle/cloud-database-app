@@ -4,7 +4,8 @@ A simple web app that connects to a Firebase Firestore cloud database. Users can
 
 ## Instructions for Build and Use
 
-[Software Demo](Put_Your_Video_Link_Here)
+https://youtu.be/SZm7PFuQ-ec
+
 
 Steps to build and/or run the software:
 
